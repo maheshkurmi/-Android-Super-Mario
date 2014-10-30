@@ -1,4 +1,4 @@
--Android-Super-Mario
+Android-Super-Mario
 ====================
 
 Many of us have grown up playing Super Mario Brothers, one of most famous games in gaming industry. This game is android Clone of famous Super mario Brothers from Nintendo.
