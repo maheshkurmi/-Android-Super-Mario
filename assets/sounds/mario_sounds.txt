@@ -1,0 +1,14 @@
+bump sounds/bump.wav 22050
+kick sounds/kick.wav 22050
+coin sounds/coin.wav 22050
+jump sounds/jump.wav 22050
+pause sounds/pause.wav 22050
+itemSprout sounds/item_sprout.wav 22050
+bonusPoints sounds/veggie_throw.wav 22050
+healthUp sounds/power_up.wav 22050
+healthDown sounds/power_down.wav 22050
+
+hurt1 sounds/mario_ooh.wav 10512
+hurt2 sounds/mario_oh.wav 10512
+yahoo1 sounds/mario_waha.wav 10512
+yahoo2 sounds/mario_woohoo.wav 10512
