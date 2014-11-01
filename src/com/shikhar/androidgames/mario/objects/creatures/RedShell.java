@@ -26,23 +26,32 @@ public class RedShell extends Creature {
 	
 	private TileMap map;
 	private boolean isMoving;
-	
-	private static Bitmap stay,rotate_1,rotate_2,rotate_3, flipped;
+	private boolean isGreen=false;
+	private  Bitmap stay,rotate_1,rotate_2,rotate_3,rotate_4, flipped;
 	private static boolean initialized=false;
-	public RedShell(int x, int y, TileMap map, MarioSoundManager soundManager, boolean isStill) {
-		
+	private float dormantTime=0;
+	public int creatureHitcount=0;
+	public RedShell(int x, int y, TileMap map, MarioSoundManager soundManager, boolean isStill, boolean isGreen) {
 		super(x, y, soundManager);
 		this.map = map;
 		setIsAlwaysRelevant(true);
- 		
-		if (!initialized){
-			 stay = MarioResourceManager.Red_Shell_1;
+		this.isGreen=isGreen;
+			if (!isGreen){
+			 stay = MarioResourceManager.Red_Shell_Still;
 			 rotate_1 = MarioResourceManager.Red_Shell_2;
 			 rotate_2 = MarioResourceManager.Red_Shell_3;
 			 rotate_3 = MarioResourceManager.Red_Shell_4;
+			 rotate_4 = MarioResourceManager.Red_Shell_1;
+				
 			 flipped = MarioResourceManager.Red_Shell_Flip;
-			 initialized=true;
-		}
+		    }else{
+		     stay = MarioResourceManager.Green_Shell[4];
+			 rotate_1 = MarioResourceManager.Green_Shell[1];
+			 rotate_2 = MarioResourceManager.Green_Shell[3];
+			 rotate_3 = MarioResourceManager.Green_Shell[2];
+		     rotate_4 = MarioResourceManager.Green_Shell[0];
+			 flipped = MarioResourceManager.Green_Shell[5];
+		    }
 		final class DeadAfterAnimation extends Animation {
 			public void endOfAnimationAction() {
 				kill();
@@ -54,11 +63,11 @@ public class RedShell extends Creature {
 		flip = new DeadAfterAnimation();
 		
 		still.addFrame(stay, 150);
-		rotate.addFrame(rotate_1, 30);
-		rotate.addFrame(stay, 30);
-		rotate.addFrame(rotate_2, 30);
-		rotate.addFrame(rotate_3, 30);
-		rotate.addFrame(rotate_1, 30);
+		rotate.addFrame(rotate_1, 40);
+		rotate.addFrame(rotate_4, 40);
+		rotate.addFrame(rotate_2, 40);
+		rotate.addFrame(rotate_3, 40);
+		rotate.addFrame(rotate_1, 40);
 		flip.addFrame(flipped, 1200);
 		flip.addFrame(flipped, 1200);
 		
@@ -117,6 +126,27 @@ public class RedShell extends Creature {
 					dx = -.16f;
 				}
 			}
+		}
+	}
+
+	public boolean isGreen() {
+		return isGreen;
+	}
+
+	@Override
+	protected void useAI(TileMap map){
+		if (currentAnimation()==still) {
+			dormantTime++;
+			if (dormantTime>=500){
+				dormantTime=0;
+				kill();
+				map.creaturesToAdd().add(new RedKoopa(Math.round(getX()), 
+						Math.round(getY()-13), soundManager, isGreen()));
+				soundManager.playGulp();
+					return;
+			}
+		}else{
+			dormantTime=0;
 		}
 	}
 }

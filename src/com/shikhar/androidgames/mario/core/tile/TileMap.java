@@ -6,7 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.Rect;
 
+import com.shikhar.androidgames.mario.core.GameRenderer;
 import com.shikhar.androidgames.mario.objects.base.Creature;
 import com.shikhar.androidgames.mario.objects.creatures.Platform;
 import com.shikhar.androidgames.mario.objects.mario.Mario;
@@ -32,6 +35,9 @@ public class TileMap {
 	private Mario player; 
 	private boolean visible =true;
 	public ParticleSystem particleSystem;
+	private ArrayList<Point> bookMarks;
+	private List<Rect> waterZones; // List of Water Zones.
+
 	/**
 	 * Constructs a new TileMap with the specified width and height (in number of tiles)
 	 * of the map.
@@ -44,6 +50,9 @@ public class TileMap {
 		platforms = new ArrayList<Platform>();
 		animatedTiles = new ArrayList<GameTile>();
 		slopedTiles = new ArrayList<SlopedTile>();
+		bookMarks=new ArrayList<Point>();
+		waterZones=new ArrayList<Rect>();
+		
 	}
 	
 	public GameTile[][] getTiles() {
@@ -119,14 +128,40 @@ public class TileMap {
 		return player;
 	}
 	
+	public void clearBookMarks(){
+		bookMarks.clear();
+	}
+	
+	public void addBookMark(Point pt){
+		bookMarks.add(pt);
+	}
+	
+	public Point getRecentbookMarkLocation(){
+		Point p=new Point(2,10);
+		//p.x=GameRenderer.pixelsToTiles(player.getX());
+		for (Point pt: bookMarks){
+			if (pt.x<GameRenderer.pixelsToTiles(player.getX())){
+				if (pt.x>p.x)p=pt;
+			}
+		}
+		return p;
+	}
+	public Point getbookMarkLocation(int x , int Y){
+		Point p=new Point(2,2);
+		for (Point pt: bookMarks){
+			if (pt.x>x) p=pt;
+		}
+		return p;
+	}
 	/**
 	 * Sets the player sprite for this map.
 	 */
 	public void setPlayer(Mario player) {
 		this.player = player;
+		player.map=this;
 	}
 	
-	
+	 
 	/**
 	 * @return a List containing every Platform in this map.
 	 */
@@ -170,6 +205,21 @@ public class TileMap {
 	 */
 	public List<Creature> relevantCreatures() {
 		return relevantCreatures;
+	}
+
+	/**
+	 * @return a List containing bookmarks in this map.
+	 */
+	public List<Point> bookMarks() {
+		return bookMarks;
+	}
+	
+	public void addWaterZone(Rect zone) {
+		waterZones.add(zone);
+	}
+
+	public List<Rect> waterZones() {
+		return waterZones;
 	}
 
 	public boolean isVisible() {

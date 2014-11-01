@@ -19,7 +19,9 @@ public class AccelerometerHandler implements SensorEventListener {
 	float accelX;
 	float accelY;
 	float accelZ;
-
+	 private  SensorManager mSensorManager;
+     private  Sensor mAccelerometer;
+     private boolean enabled=false;
 	/**
 	 * The constructor takes a Context, from which it gets a SensorManager
 	 * instance to set up the event listening.
@@ -27,14 +29,13 @@ public class AccelerometerHandler implements SensorEventListener {
 	 * @param context
 	 */
 	public AccelerometerHandler(Context context) {
-		SensorManager manager = (SensorManager) context
+		mSensorManager = (SensorManager) context
 				.getSystemService(Context.SENSOR_SERVICE);
-		if (manager.getSensorList(Sensor.TYPE_ACCELEROMETER).size() != 0) {
-			Sensor accelerometer = manager.getSensorList(
-					Sensor.TYPE_ACCELEROMETER).get(0);
-			manager.registerListener(this, accelerometer,
-					SensorManager.SENSOR_DELAY_GAME);
+		if (mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).size() != 0) {
+			 mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+			if (mAccelerometer!=null) enabled=true;
 		}
+        
 	}
 
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -58,4 +59,18 @@ public class AccelerometerHandler implements SensorEventListener {
 	public float getAccelZ() {
 		return accelZ;
 	}
+	
+	protected void registerListener() {
+		enabled=mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+	protected void unRegisterListener() {
+	   mSensorManager.unregisterListener(this);
+	   enabled=false;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
 }

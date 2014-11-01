@@ -6,12 +6,15 @@ import android.graphics.Bitmap;
 
 import com.shikhar.androidgames.mario.core.MarioResourceManager;
 import com.shikhar.androidgames.mario.core.MarioSoundManager;
+import com.shikhar.androidgames.mario.core.Settings;
 import com.shikhar.androidgames.mario.core.animation.Animation;
 import com.shikhar.androidgames.mario.core.tile.GameTile;
 import com.shikhar.androidgames.mario.core.tile.TileMap;
 import com.shikhar.androidgames.mario.objects.creatures.Coin;
+import com.shikhar.androidgames.mario.objects.creatures.FireFlower;
 import com.shikhar.androidgames.mario.objects.creatures.Mushroom;
 import com.shikhar.androidgames.mario.objects.creatures.Score;
+import com.shikhar.androidgames.mario.objects.mario.Mario;
 
 
 public class QuestionBlock extends GameTile {
@@ -43,7 +46,7 @@ public class QuestionBlock extends GameTile {
 		MarioResourceManager.Question_Block_Dead};
 		
 		Random r = new Random();
-		active = new Animation(r.nextInt(20) + 140).addFrame(q[0]).addFrame(q[1]).addFrame(q[2]).addFrame(q[3]);
+		active = new Animation(r.nextInt(20) + 200).addFrame(q[0]).addFrame(q[1]).addFrame(q[2]).addFrame(q[3]);
 		dead = new Animation(2000).addFrame(q[4]);
 		setAnimation(active);
 	}
@@ -59,15 +62,23 @@ public class QuestionBlock extends GameTile {
 				setOffsetY(-10);
 				soundManager.playCoin();
 				Coin newCoin = new Coin(getPixelX(), getPixelY());
-				Score score = new Score(getPixelX(), getPixelY());
+				Score score = new Score(getPixelX(), getPixelY(),0);
 				map.creaturesToAdd().add(newCoin);
 				map.creaturesToAdd().add(score);
+				Settings.addScore(100);
+				Settings.addCoins(1);
 				newCoin.shoot();
 			} else if(hasMushroom) {
 				setOffsetY(-10);
 				soundManager.playItemSprout();
-				Mushroom shroom = new Mushroom(getPixelX(), getPixelY()-26);
-				map.creaturesToAdd().add(shroom);
+				if (!((Mario)map.getPlayer()).isSmall() && (!((Mario)map.getPlayer()).isFireMan())){
+					FireFlower flower=new FireFlower(getPixelX(), getPixelY());
+					map.creaturesToAdd().add(flower);
+				}else{
+					Mushroom shroom = new Mushroom(getPixelX(), getPixelY()-16,((Mario)map.getPlayer()).isFireMan());
+					map.creaturesToAdd().add(shroom);
+				}
+				Settings.addScore(100);
 			}
 			setAnimation(dead);
 			isActive = false;

@@ -67,4 +67,16 @@ public class AndroidInput implements Input {
 	public List<KeyEvent> getKeyEvents() {
 		return keyHandler.getKeyEvents();
 	}
+	
+	public void registerAccListener(){
+		accelHandler.registerListener();
+	}
+	
+	public void unRegisterAccListener(){
+		accelHandler.unRegisterListener();
+	}
+	
+	public boolean hasAccelerometer(){
+		return accelHandler.isEnabled();
+	}
 }

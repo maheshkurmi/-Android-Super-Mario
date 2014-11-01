@@ -1,11 +1,8 @@
 package com.shikhar.androidgames.mario.core;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-
 import com.shikhar.androidgames.framework.Screen;
 import com.shikhar.androidgames.framework.gfx.AndroidGame;
+import com.shikhar.androidgames.mario.objects.base.Creature;
 import com.shikhar.androidgames.mario.screens.SplashLoadingScreen;
 
 /**
@@ -18,53 +15,40 @@ public class MarioGame extends AndroidGame{
 	public MarioResourceManager resourceManager;
 	public MarioSoundManager soundManager;
 	public static final int QUIT_GAME_DIALOG = 0;
+	public static final int VERSION = 1;
+
 	public Screen getStartScreen() {
 		 if (firstTimeCreate) {
 	            //Assets.load(this);
 	            soundManager=new MarioSoundManager(this);
 	            resourceManager=new MarioResourceManager(this);
 	            firstTimeCreate = false;
-	        }
+	            Creature.WAKE_UP_VALUE_DOWN_RIGHT=WIDTH/16;
+	            //Creature.WAKE_UP_VALUE_DOWN_RIGHT=HEIGHT/16;
+	      }
          return new SplashLoadingScreen(this);
 	}
 
 	
-	@Override
-	public void onBackPressed() {
-		getCurrentScreen().onBackPressed();
-	}
-
 	 @Override
 	 public void onResume() {
 	      super.onResume();
-	      if (soundManager!=null)soundManager.playMusic();
+	      MarioSoundManager.playMusic();
 	      
 	 }
 
 	@Override
     public void onPause() {
-	     super.onPause();
-	   	 if (soundManager!=null)soundManager.pauseMusic();
+	    super.onPause();
+	   	MarioSoundManager.pauseMusic();
     }
 	
-	
-	 @Override
-	    protected Dialog onCreateDialog(int id) {
-	        Dialog dialog = null;
-	        if (id == QUIT_GAME_DIALOG) {
-	        	
-	            dialog = new AlertDialog.Builder(this)
-	                .setTitle("Quit Game")
-	                .setPositiveButton("Return to main menu?", new DialogInterface.OnClickListener() {
-	                    public void onClick(DialogInterface dialog, int whichButton) {
-	                    	finish();
-	                    }
-	                })
-	                .setNegativeButton("Quit", null)
-	                .setMessage("Cancel")
-	                .create();
-	        }
-	        return dialog;
-	    }
+	@Override
+	public void setScreenWithFade(Screen screen) {
+		soundManager.playswitchScreen();
+		super.setScreenWithFade(screen);
+	}
+
+
 	
 }

@@ -26,7 +26,10 @@ abstract public class Animatible {
 	public void setAnimation(Animation currAnim) {
 		this.currAnim = currAnim;
 	}
-	
+	/**
+	 * updates animation
+	 * @param time
+	 */
 	public void update(int time) {
 		currAnim.update(time);
 	}

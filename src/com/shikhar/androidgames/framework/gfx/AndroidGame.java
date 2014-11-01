@@ -9,6 +9,7 @@ import com.shikhar.androidgames.framework.Screen;
 import com.shikhar.androidgames.framework.fileio.AndroidFileIO;
 import com.shikhar.androidgames.framework.input.AndroidInput;
 import com.shikhar.androidgames.framework.sfx.AndroidAudio;
+import com.shikhar.androidgames.mario.core.Settings;
 
 import android.app.Activity;
 import android.content.Context;
@@ -36,7 +37,7 @@ import android.view.WindowManager;
  * 
  */
 public abstract class AndroidGame extends Activity implements Game {
-	protected AndroidFastRenderView renderView;
+	protected GameView renderView;
 	protected Graphics graphics;
 	protected Audio audio;
 	protected Input input;
@@ -46,11 +47,15 @@ public abstract class AndroidGame extends Activity implements Game {
 	protected Bitmap frameBuffer;
 	protected int WIDTH;
 	protected int HEIGHT=240;
-	
+	private boolean switchScreen =false;
+	protected Screen nextScreen=null;
+	protected boolean screenTransitionActive=false;;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		//check the current orientation of the device and set the Width and Height of our Game. 
@@ -72,12 +77,14 @@ public abstract class AndroidGame extends Activity implements Game {
 		// proceed by creating floats to scale and adjust everything to the device's aspect ratio.
 		float scaleX = (float) frameBufferWidth	/ w;
 		float scaleY = (float) frameBufferHeight/ h;
-		renderView = new AndroidFastRenderView(this, frameBuffer);
+		screen = getStartScreen();
+		renderView = new GameView(this, frameBuffer);
+		  // set up a new game
 		graphics = new AndroidGraphics(getAssets(), frameBuffer);
 		fileIO = new AndroidFileIO(this);
 		audio = new AndroidAudio(this);
 		input = new AndroidInput(this, renderView, scaleX, scaleY);
-		screen = getStartScreen();
+		
 		setContentView(renderView);
 		//we also use the PowerManager to define the wakeLock variable and we acquire and 
 		//release wakelock in the onResume and onPause methods, respectively. 
@@ -87,21 +94,29 @@ public abstract class AndroidGame extends Activity implements Game {
 	}
 
 	@Override
+	public void onBackPressed() {
+		if (!screenTransitionActive)getCurrentScreen().onBackPressed();
+	}
+	
+	@Override
 	public void onResume() {
 		super.onResume();
 		wakeLock.acquire();
 		screen.resume();
-		renderView.resume();
+		renderView.getThread().unpause();
+		Settings.loadPreferences(this);
+		((AndroidInput) input).registerAccListener();
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 		wakeLock.release();
-		renderView.pause();
+		renderView.getThread().pause();
 		screen.pause();
 		if (isFinishing())
 			screen.dispose();
+		((AndroidInput) input).unRegisterAccListener();
 	}
 
 	public Input getInput() {
@@ -123,11 +138,22 @@ public abstract class AndroidGame extends Activity implements Game {
 	public void setScreen(Screen screen) {
 		if (screen == null)
 			throw new IllegalArgumentException("Screen must not be null");
-		this.screen.pause();
 		this.screen.dispose();
-		screen.resume();
-		screen.update(0);
 		this.screen = screen;
+		//screen.resume();
+		screen.update(0);
+		this.nextScreen=null;
+		getInput().getKeyEvents().clear();
+		getInput().getTouchEvents().clear();
+	}
+
+	public void setScreenWithFade(Screen screen) {
+		if (screenTransitionActive) return;
+		if (screen == null)
+			throw new IllegalArgumentException("Screen must not be null");
+		this.nextScreen=screen;
+		setSwitchScreen(true);
+		setScreenTransitionActive(true);
 	}
 
 	public Screen getCurrentScreen() {
@@ -142,11 +168,44 @@ public abstract class AndroidGame extends Activity implements Game {
 		return frameBuffer;
 	}
 	
+	public void setBuffer(Bitmap buffer){
+		frameBuffer=buffer;
+		renderView.setBuffer(frameBuffer);
+
+	}
+	
 	public int getScreenWidth(){
 		return WIDTH;
 	}
 	
 	public int getScreenHeight(){
 		return HEIGHT;
+	}
+
+	public boolean isSwitchingScreen() {
+		return switchScreen;
+	}
+
+	public void setSwitchScreen(boolean switchScreen) {
+		this.switchScreen = switchScreen;
+	}
+	
+	public Screen getNextScreen(){
+		return nextScreen;
+		/*
+		if (nextScreen!=null){
+			return nextScreen;
+		}else{
+			return screen;
+		}
+		*/
+	}
+
+	public boolean isScreenTransitionActive() {
+		return screenTransitionActive;
+	}
+
+	public void setScreenTransitionActive(boolean screenTransitionActive) {
+		this.screenTransitionActive = screenTransitionActive;
 	}
 }

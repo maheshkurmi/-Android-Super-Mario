@@ -54,13 +54,23 @@ public class Thorny extends Creature {
 		flip.addFrame(flipped, 1200);
 		flip.addFrame(flipped, 1200);
 		setAnimation(left);
+		setIsAlwaysRelevant(true);
+		//align base of creature to tile
+		this.y=y-getHeight()+16;
 	}
 	
 	public void xCollide(Point p) {
 		super.xCollide(p);
+		/*
 		if(currentAnimation() == left) {
 			setAnimation(right);
 		} else {
+			setAnimation(left);
+		}
+		*/
+		if(dx>0) {
+			setAnimation(right);
+		} else if(dx<0) {
 			setAnimation(left);
 		}
 	}
@@ -80,20 +90,20 @@ public class Thorny extends Creature {
 		setAnimation(flip);
 		setIsFlipped(true);
 		setIsCollidable(false);
+		setGravityFactor(0.7f);
 		dy = -.2f;
 		dx = 0;
 	}
 	
-	public void wakeUp() {
+	public void wakeUp(boolean isLeft) {
 		super.wakeUp();
-		int rNum = r.nextInt(3);
-			if(rNum == 0 || rNum == 1) {
-				dx = -.03f;
-				setAnimation(left);
-			} else {
-				dx = .03f;
-				setAnimation(right);
-			}
+		if(isLeft) {
+			dx = -.032f;
+			setAnimation(left);
+		} else {
+			dx = .032f;
+			setAnimation(right);
+		}
 	}
 	
 	public void jumpedOn() {

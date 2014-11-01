@@ -3,11 +3,13 @@ package com.shikhar.androidgames.mario.objects.tiles;
 import android.graphics.Bitmap;
 
 import com.shikhar.androidgames.mario.core.MarioSoundManager;
+import com.shikhar.androidgames.mario.core.Settings;
 import com.shikhar.androidgames.mario.core.tile.GameTile;
 import com.shikhar.androidgames.mario.core.tile.TileMap;
 import com.shikhar.androidgames.mario.objects.creatures.Coin;
 import com.shikhar.androidgames.mario.objects.creatures.Mushroom;
 import com.shikhar.androidgames.mario.objects.creatures.Score;
+import com.shikhar.androidgames.mario.objects.mario.Mario;
 import com.shikhar.androidgames.mario.particles.ParticleSystem;
 
 
@@ -46,19 +48,28 @@ public class Brick extends GameTile {
 			setOffsetY(-10);
 			soundManager.playCoin();
 			Coin newCoin = new Coin(getPixelX(), getPixelY());
-			Score score = new Score(getPixelX(), getPixelY());
+			Score score = new Score(getPixelX(), getPixelY(),0);
 			map.creaturesToAdd().add(newCoin);
 			map.creaturesToAdd().add(score);
+			Settings.addScore(100);
+			Settings.addCoins(1);
 			newCoin.shoot();
 		} else if (hasMushroom) {
 			setOffsetY(-10);
 			soundManager.playItemSprout();
-			Mushroom shroom = new Mushroom(getPixelX(), getPixelY() - 26);
+			Mushroom shroom = new Mushroom(getPixelX(), getPixelY() - 26,((Mario)map.getPlayer()).isFireMan());
 			map.creaturesToAdd().add(shroom);
-		} else {// (((Mario)map.getPlayer()).){
-			soundManager.playBrickShatter();
-			map.particleSystem = new ParticleSystem(getPixelX(), getPixelY(), 8);
-			map.getTiles()[getPixelX() >> 4][getPixelY() >> 4] = null;
+			Settings.addScore(100);
+		} else {
+			if (((Mario)map.getPlayer()).isSmall()){
+				setOffsetY(-10);
+				soundManager.playKick();
+			}else{
+				soundManager.playBrickShatter();
+				map.particleSystem = new ParticleSystem(getPixelX(), getPixelY(), 6);
+				map.getTiles()[getPixelX() >> 4][getPixelY() >> 4] = null;
+				Settings.addScore(100);
+			}
 		}
 
 	}

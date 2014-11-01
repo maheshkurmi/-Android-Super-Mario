@@ -87,7 +87,7 @@ public class Sprite extends Animatible {
 	public static boolean isCollision(Sprite s1, Sprite s2) {
 	    // if the Sprites are the same, return false
 	    if (s1 == s2) {
-	        return false;
+	        return false;     
 	    }
 	
 	    // get the pixel location of the Sprites
@@ -99,6 +99,7 @@ public class Sprite extends Animatible {
 	    // check if the two sprites' boundaries intersect
 	    return (s1x < s2x + s2.getWidth() && s2x < s1x + s1.getWidth() && 
 	    		s1y < s2y + s2.getHeight() && s2y < s1y + s1.getHeight());
+ 
 	}
 }
 

@@ -25,11 +25,17 @@ public class Coin extends Creature {
 	//private Animation turn;
 	private Animation shoot;
 	
+	public Coin(int pixelX, int pixelY, float dx, float dy) {
+		this(pixelX, pixelY);
+		this.dx=dx;
+		this.dy=dy;
+	}
+
 	public Coin(int pixelX, int pixelY) {
 		
 		super(pixelX, pixelY);
 		setIsItem(true);
-		
+		dx=0; dy=0;
 		final class DeadAfterAnimation extends Animation {
 			public void endOfAnimationAction() {
 				kill();
@@ -70,6 +76,10 @@ public class Coin extends Creature {
 			if(dy < 0) {
 				dy = dy + .018f;
 			} 
+		}else if(dx!=0 || dy !=0){
+			dy=dy+GRAVITY*time*0.25f;
+			y = y + dy * time;
+			x=x+dx*time;
 		}
 	}
 	
@@ -77,6 +87,7 @@ public class Coin extends Creature {
 		setIsCollidable(false);
 		setAnimation(shoot);
 		dy = -.3f;
+		dx = 0;
 	}
 
 }

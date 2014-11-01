@@ -1,8 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+<string name="app_name">Super Mario</string>
+<string name="change_level">Switch Levels</string>
+<string name="test_animation">Test Animation</string>
+<string name="test_diary">Test Diary</string>
+<string name="unlock_levels">Unlock All Levels</string>
+<string name="unlock_next_level">Unlock Next Level</string>
+<string name="method_tracing">Toggle Method Tracing</string>
 
-    <string name="app_name">SuperMario</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_mario">MarioActivity</string>
+<string name = "game_over">GAME OVER</string>
+<string name = "thanks_for_playing">THANKS FOR PLAYING!</string>
+<string name = "please_wait">PLEASE WAIT</string>
+
+
+<!-- UI -->
+<string name="preference_save_game">Game Data</string>
+<string name="preference_erase_save_game">Erase Saved Game</string>
+<string name="preference_erase_save_game_dialog">Really erase your saved game?  All of your progress/Settings will be lost!</string>
+<string name="preference_erase_save_game_dialog_title">Now wait just a minute</string>
+<string name="preference_erase_save_game_dialog_ok">Erase Save</string>
+<string name="preference_erase_save_game_dialog_cancel">Cancel</string>
+
+
+<string name="preference_game_settings">Game Settings</string>
+
+<string name="preference_audio_controls">Audio Settings</string>
+<string name="preference_enable_sound">Enable Sound</string>
+<string name="preference_enable_sound_summary">Disabling sound may improve performance on some devices.</string>
+<string name="preference_sound_volume">Set Sound Volume</string>
+<string name="preference_sound_volume_summary">Adjusts the volume of Sound Effects of Game</string>
+<string name="preference_sound_min">Low</string>
+<string name="preference_sound_max">High</string>
+
+<string name="preference_enable_music">Enable Music</string>
+<string name="preference_enable_music_summary">Disabling music may improve performance on some devices.</string>
+<string name="preference_music_volume">Set Music Volume</string>
+<string name="preference_music_volume_summary">Adjusts the volume of BackGround Music of Game</string>
+<string name="preference_music_min">Low</string>
+<string name="preference_music_max">High</string>
+
+
+<string name="preference_safe_mode">Safe Mode</string>
+<string name="preference_safe_mode_summary">Enables safety hacks for broken devices (Cliq, etc), but causes some visual artifacts. Try this if you have problems.</string>
+
+<string name="preference_configure_controls">Configure Controls</string>
+<string name="preference_enable_click_attack">Click Attack</string>
+<string name="preference_enable_click_attack_summary">Use the trackball click or directional pad center button to attack.</string>
+<string name="preference_enable_screen_controls">On-Screen Controls</string>
+<string name="preference_enable_screen_controls_summary">Displays movement pad and buttons on screen.  Suggested for devices without a d-pad or trackball. Requires mulitouch.</string>
+
+<string name="preference_enable_tilt_controls">Tilt Controls</string>
+<string name="preference_enable_tilt_controls_summary">EXPERIMENTAL!  Tilt the phone left and right to drive the Android around.  Good for devices with no trackball or d-pad.</string>
+
+<string name="preference_movement_sensitivity">Motion Sensitivity</string>
+<string name="preference_movement_sensitivity_summary">Adjusts the sensitivity of the trackball, d-pad, or optical sensor.</string>
+<string name="preference_movement_min">Slow</string>
+<string name="preference_movement_max">Fast</string>
+
+<string name="preference_tilt_sensitivity">Tilt Sensitivity</string>
+<string name="preference_tilt_sensitivity_summary">Adjusts the sensitivity of the tilt controls.</string>
+<string name="preference_tilt_min">Slow</string>
+<string name="preference_tilt_max">Fast</string>
+
+<string name="preference_key_config">Configure Keyboard</string>
+<string name="preference_key_config_summary">Customize keys for phones with hard keyboards.</string>
+<string name="preference_key_config_dialog_title">Configure Keyboard</string>
+<string name="preference_key_config_dialog_ok">Save</string>
+<string name="preference_key_config_dialog_cancel">Cancel</string>
+<string name="preference_key_config_left">Left</string>
+<string name="preference_key_config_right">Right</string>
+<string name="preference_key_config_jump">Jump</string>
+<string name="preference_key_config_attack">Attack</string>
+
+
+<string name="preference_enable_statistics">Report Play Statistics</string>
+<string name="preference_enable_statistics_summary">Sends anonymous play statistics to a server to help us make this game more fun.</string>
+
+
+<string name="preference_about">About</string>
+<string name="preference_about_title">About Super Mario</string>
+<string name="preference_about_summary">Super Mario is android remake of famous Nintendo\'s Mario Brothers and  is developed by Mahesh Kurmi (a hobiest Programmer), Aman Gupta(Student of IITD), Nitin Kukreja(A Student of NIT Trichi).</string>
+<string name="preference_visit_site">Go to the Super Mario web site</string>
+<string name="preference_thanks_title">Special Thanks</string>
+<string name="preference_thanks_summary">Special Thanks to meatfighter.com (for assets and base of game),Softendo.com(levels of game are taken from SuperMario Forever) Chris Pruett and Genki Mine (for Replica Island Source), Nintendo, and the Android Team for their support of this project.</string>
+<string name="preference_licence_title">License</string>
+<string name="preference_licence_summary">Portions of this game are modifications based on work created and shared by Google and some open source projects under gnu Licence.</string>
+<string name="preference_misc">More Information</string>
+<string name="preference_enable_debug">Debug Log</string>
+<string name="preference_enable_debug_summary">Output various logs to logcat.  This option will slow the game down.</string>
+
+<string name="game_results_title">GAME RESULTS</string>
+<string name="game_results_pearls_collected">PEARLS COLLECTED:</string>
+<string name="game_results_robots_destroyed">ROBOTS DESTROYED:</string>
+<string name="game_results_total_play_time">TOTAL PLAY TIME:</string>
+<string name="game_results_ending">ENDING ACHIEVED:</string>
+<string name="game_results_unlocks_message">You can now access Linear Mode and the Level Select from the Extras menu!</string>
+<string name="game_results_kabocha_ending">BAD ENDING #1 - Kabocha Wins</string>
+<string name="game_results_rokudou_ending">BAD ENDING #2 - Rokudou Wins</string>
+<string name="game_results_wanda_ending">GOOD ENDING - World Saved!</string>
+<string name="game_results_ok_button">Game Over!</string>
+
+<string name="saved_game_erased_notification">Saved Game Erased</string>
+
+<string name="quit_game_dialog_title">Quit Game?</string>
+<string name="quit_game_dialog_ok">Quit</string>
+<string name="quit_game_dialog_cancel">Cancel</string>
+<string name="quit_game_dialog_message">Return to main menu?</string>
+
+<string name="new_game_dialog_title">Start New Game?</string>
+<string name="new_game_dialog_ok">Start New Game</string>
+<string name="new_game_dialog_cancel">Cancel</string>
+<string name="new_game_dialog_message">Starting a new game in this mode will erase your current game in progress.  Are you sure you want to start a new game?</string>
+
+<string name="extras_locked_dialog_title">Extra Locked!</string>
+<string name="extras_locked_dialog_ok">Get to it!</string>
+<string name="extras_locked_dialog_message">This extra feature is still locked.  Beat the game one time to unlock it!</string>
+
+
+<string name="nav_type">Trackball</string>
+
+<string name="whats_new_dialog_title">Super Mario</string>
+<string name="whats_new_dialog_ok">Rock on!</string>
+<string name="whats_new_dialog_message">Thanks for downloading Super Mario.  Over 1.5 million people have played Super Mario !\n\n
+<b>New in this version:</b>\n
+- Unlockable extra modes: Linear Story Mode and Level Select.\n
+- On-screen controls for devices with no buttons.\n
+- Difficulty settings for new games. \n
+- Play statistics shown when you finish the game.\n
+- Lots of bugs fixed!\n
+\n
+\n
+This is an open source project.  If you are interested in how it works, or would like to use it to make your
+own games, check out the source at our web site, .......
+\n
+\n
+Also note that this game sends anonymous play statistics back to a server.  If you’d rather not
+allow that, you can turn it off in the options screen.</string>
+
+<string name="control_setup_dialog_title">Control Setup</string>
+<string name="control_setup_dialog_ok">Leave it this way</string>
+<string name="control_setup_dialog_change">Change control settings</string>
+<string name="control_setup_dialog_message">
+Based on your device hardware, the following control scheme has been automatically selected:
+&lt;br>
+&lt;br>
+&lt;small>%1s&lt;/small>
+&lt;br>
+&lt;br>Super Mario supports many different control configurations.  Control options can be changed at 
+any time using the Configure Controls button in Options.
+&lt;br>
+&lt;br>
+Are you ok with the control system selected above, or would you like to set up your control 
+settings manually now?</string>
+<string name="control_setup_dialog_trackball">&lt;b>Trackball / Trackpad&lt;/b> - Sensitivity can be adjusted in Options.</string>
+<string name="control_setup_dialog_dpad">&lt;b>Keyboard / Pad&lt;/b> - Key mappings can be changed in Options.</string>
+<string name="control_setup_dialog_screen">&lt;b>On-Screen Pad&lt;/b></string>
+<string name="control_setup_dialog_tilt">&lt;b>Tilt&lt;/b> - Sensitivity can be adjusted in Options.</string> 
+
+<string name="onscreen_tilt_dialog_title">New Control Scheme!</string>
+<string name="onscreen_tilt_dialog_ok">On-Screen Pad</string>
+<string name="onscreen_tilt_dialog_cancel">Stick with Tilt</string>
+<string name="onscreen_tilt_dialog_message">This version of Super Mario  adds an option for 
+<b>On-Screen Controls</b> for multi-touch devices.  Your device supports this new 
+mode, but your options are currently set to <b>Tilt</b> controls.  Would you like to try the 
+new On-Screen Controls instead, or stick with Tilt? 
+\n<small>You can change this setting at any time by choosing Configure Controls under Options.</small>
+</string>
+
+
+<!-- Toast Messages -->
+
+
+<!--  names -->
+
+<!-- level names --> <!-- 3-5 is the first level to take place in the "present" --> <!-- Special level for Kyle fight -->
+
+<!-- Level time codes -->
+
+<!-- level names -->
+
+<!--  diary entries -->
+
+<!-- Misc Dialog -->
+
+<string name="KyleDeadNote">It’s Kyle.  He’s not moving.</string>
 
 </resources>

@@ -24,7 +24,7 @@ public class Piranha extends Creature {
 	float dy=0.3f;
 	float y1=0;
 	float initY;
-	static int wait=0;
+	private int wait=0;
 	public Piranha(int pixelX, int pixelY, MarioSoundManager soundManager) {
 		super(pixelX, pixelY,soundManager);
 		if (!initialized) {
@@ -36,8 +36,10 @@ public class Piranha extends Creature {
 		turn = new Animation(200).addFrame(p1).addFrame(p2);
 		setAnimation(turn);
 		dy= 0.5f;
+		dx=0;
 		initY=pixelY;
 		setOffsetX(-3);
+
 	}
 	
 	@Override
@@ -47,10 +49,24 @@ public class Piranha extends Creature {
 	
 	@Override
 	public void updateCreature(TileMap map, int time) {
-		if (wait>0){
+		
+		// make sure piranha waits for some time inside pipe
+		if (wait > 0) {
+				if (map.getPlayer().getX() < x) {
+					if (x - map.getPlayer().getX() <= map.getPlayer().getWidth() + 16){
+						wait = 75;
+						return;
+					}
+				} else {
+					if (map.getPlayer().getX() - x <= 16 + getWidth() - 8){
+						wait = 75;
+						return;
+					}
+				}
 			wait--;
 			return;
 		}
+		
 		super.update(time);
 		y1=y1+dy;
 		if (y1 >getHeight()){
@@ -65,6 +81,9 @@ public class Piranha extends Creature {
 		//setOffsetY(getOffsetY()+1); 
 	}
 	
+	//override for creature collisions
+	public void creatureXCollide() {}
+		
 	public void flip() {
 		kill();
 	}

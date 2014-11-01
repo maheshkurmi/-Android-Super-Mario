@@ -1,6 +1,7 @@
 package com.shikhar.androidgames.mario.core;
 
 
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -11,8 +12,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
-import android.graphics.Typeface;
-
 import com.shikhar.androidgames.mario.core.animation.Sprite;
 import com.shikhar.androidgames.mario.core.tile.GameTile;
 import com.shikhar.androidgames.mario.core.tile.Tile;
@@ -35,16 +34,18 @@ public class GameRenderer {
 	// keeping the screen from bobbing when there is a change in height of the player animation. 
 	private int AdjustYScroll = 0;
 	private ArrayList<TileMap> maps = new ArrayList<TileMap>();
-	private int lastLife = -5;
-	private DecimalFormat df2 = new DecimalFormat("#,###,###,##0.00");
+	private DecimalFormat df2 = new DecimalFormat("0,000");//("#,###,###,##0000");
 
 	// the size in bits of the tile
     private static final int TILE_SIZE = 16;
     // Math.pow(2, TILE_SIZE_BITS) == TILE_SIZE
     private static final int TILE_SIZE_BITS = 4;
-
+   
+    private boolean drawHudEnabled=true;
     private Bitmap background;
-    int ktb=0;
+    public static int xOffset=0;
+	public static int yOffset=0;
+	int waveOffset=0;
     // Converts a pixel position to a tile position.
     public static int pixelsToTiles(float pixels) {
         return pixelsToTiles(Math.round(pixels));
@@ -70,6 +71,7 @@ public class GameRenderer {
     // Sets the background to draw.
     public void setBackground(Bitmap background) {
         this.background = background;
+        MarioResourceManager.Background=background;
     }
     
 	// Returns the tile that a Sprite has collided with. Returns null if no 
@@ -138,133 +140,222 @@ public class GameRenderer {
 	    return collisionPoints;
 	}
     
-    /**
-     * Draws all game elements. I did the best I can to separate all updating from drawing. However, it 
-     * seems its much more efficient to do some updating here where I have all the information I need
-     * to make important decisions. So calling draw() DOES change the game state.
-     */
-    public void draw(Canvas g, TileMap mainMap, TileMap backgroundMap, TileMap foregroundMap, int screenWidth, int screenHeight) {
-     	// add the three maps to the list of maps to draw, only mainMap is interactive
-    	if (backgroundMap!=null)maps.add(backgroundMap);
-    	maps.add(mainMap);
-    	if (foregroundMap!= null)maps.add(foregroundMap);
-        Mario player = mainMap.getPlayer();
-        int mapWidth = tilesToPixels(mainMap.getWidth());
-        int mapHeight = tilesToPixels(mainMap.getHeight());
-        
-        // get the scrolling position of the map based on player's position...
-        
-        int offsetX = screenWidth/2 - Math.round(player.getX()) - TILE_SIZE;
-        offsetX = Math.min(offsetX, 0); // if this gets set to 0, player is within a screen width
-        offsetX = Math.max(offsetX, screenWidth - mapWidth);
-        
-        int round = Math.round(player.getY());
-        
-        // initialize AdjustYScroll
-        if (AdjustYScroll == 0) {
-        	AdjustYScroll = round;
-        }
-        
-        // if the player is jumping, change the level at which the screen is drawn.
-        if(player.isJumping() || player.isAbovePlatform() || player.isOnSlopedTile()) {
-        	AdjustYScroll = round;
-        }
-        
-        int offsetY = screenHeight/2 - AdjustYScroll - TILE_SIZE;
-        offsetY = Math.min(offsetY, 0);
-        offsetY = Math.max(offsetY, screenHeight - mapHeight ); 
+	/**
+	 * Draws all game elements. I did the best I can to separate all updating
+	 * from drawing. However, it seems its much more efficient to do some
+	 * updating here where I have all the information I need to make important
+	 * decisions. So calling draw() DOES change the game state.
+	 */
+	public void draw(Canvas g, TileMap mainMap, TileMap backgroundMap,
+			TileMap foregroundMap, int screenWidth, int screenHeight) {
+		// add the three maps to the list of maps to draw, only mainMap is
+		// interactive
+		if (backgroundMap != null)
+			maps.add(backgroundMap);
+		maps.add(mainMap);
+		if (foregroundMap != null)
+			maps.add(foregroundMap);
+		Mario player = mainMap.getPlayer();
+		int mapWidth = tilesToPixels(mainMap.getWidth());
+		int mapHeight = tilesToPixels(mainMap.getHeight());
 
-        // draw parallax background image
-        if (background != null) {
-        	// x and y are responsible for fitting the background image to the size of the map
-            int x = offsetX * (screenWidth - background.getWidth()) / (screenWidth - mapWidth);
-            int y = offsetY * (screenHeight - background.getHeight()) / (screenHeight - mapHeight);
-            g.drawBitmap(background, x, y, null);
-        }
+		// get the scrolling position of the map based on player's position...
 
+		int offsetX = screenWidth / 2 - Math.round(player.getX()) -TILE_SIZE;
+		offsetX = Math.min(offsetX, 0); // if this gets set to 0, player is
+										// within a screen width
+		offsetX = Math.max(offsetX, screenWidth - mapWidth);
 
-        int firstTileX = pixelsToTiles(-offsetX);
-        int lastTileX = firstTileX + pixelsToTiles(screenWidth) + 1;
-        int firstTileY = pixelsToTiles(-offsetY);
-        int lastTileY = firstTileY + pixelsToTiles(screenHeight) + 1;
-      
-        
-        for(TileMap map : maps) {
-            // draw the visible tiles
-        	if(map != null && map.isVisible()) {
-        		for (int y=firstTileY; y<= lastTileY; y++) {
-                    for (int x=firstTileX; x <= lastTileX; x++) {
-                    	GameTile tile = map.getTile(x, y);
-        	            if(tile != null) {
-        	            	tile.draw(g, tilesToPixels(x), tilesToPixels(y), 
-        	            			tile.getOffsetX() + offsetX, tile.getOffsetY() + offsetY);
-                        }
-                    }
-                }
-        	}
-        	
-	    	if(map.isVisible() ) {
-                
-	    		for(int i = 0; i < map.creatures().size(); i++) { 
-	            	
-	    			Creature c = map.creatures().get(i);
-	                int x = Math.round(c.getX()) + offsetX;
-	                int y = Math.round(c.getY()) + offsetY;
-	                int tileX = pixelsToTiles(x);
-	                int tileY = pixelsToTiles(y); 
-	                
-	                if(!c.isAlive()) {
-	                	map.creatures().remove(i);
-	                	i--;
-	                } else {
-		                if(Creature.WAKE_UP_VALUE_UP_LEFT <= tileX && Creature.WAKE_UP_VALUE_DOWN_RIGHT >= tileX && 
-		                		Creature.WAKE_UP_VALUE_UP_LEFT <= tileY && Creature.WAKE_UP_VALUE_DOWN_RIGHT >= tileY ) {
-		                	
-		                	// Only want to deal with platforms that are awake.
-			                if(c instanceof Platform) { map.platforms().add((Platform) c); }
-	                        // Wake up the creature the first time the sprite is in view.
-		                	if(c.isSleeping()) { c.wakeUp(); }
-			                
-		                	c.setIsOnScreen(true);
-		                	if(!c.isInvisible()) {
-		                		c.draw(g, x, y); // draw the creature
-		                	}
-			                map.relevantCreatures().add(c);
-			                
-		                } else {
-		                	if(c.isAlwaysRelevant()) { map.relevantCreatures().add(c); }
-		                	c.setIsOnScreen(false);
-		                }
-	                }
-	                           
-	                // Draw the player.
-	                
-	                if(map==mainMap && !(((Mario) player).isInvisible())) {
-	                	((Mario)player).draw(g, Math.round(player.getX()) + offsetX, Math.round(player.getY()) + offsetY,
-	                		player.getOffsetX(), player.getOffsetY());
-	                	ktb++;
-						if (map.particleSystem != null
-								&& ktb % 60 == 0) {
-							map.particleSystem.updatePhysics(1);
-							map.particleSystem.doDraw(g, offsetX,
-									offsetY);
-							ktb = 0;
+		int round = Math.round(player.getY());
+
+		// initialize AdjustYScroll
+		if (AdjustYScroll == 0) {
+			AdjustYScroll = round;
+		}
+
+		// if the player is jumping, change the level at which the screen is
+		// drawn.
+		if (player.isJumping() || player.isAbovePlatform()
+				|| player.isOnSlopedTile()) {
+			AdjustYScroll = round;
+		}
+
+		int offsetY = screenHeight / 2 - AdjustYScroll - TILE_SIZE;
+		offsetY = Math.min(offsetY, 0);
+		offsetY = Math.max(offsetY, screenHeight - mapHeight);
+
+		//Store offsetValues
+		GameRenderer.xOffset=offsetX;
+		GameRenderer.yOffset=offsetY;
+		
+		// draw parallax background image
+		if (background != null) {
+			// x and y are responsible for fitting the background image to the
+			// size of the map
+			int x;
+			if (mapWidth - screenWidth >= 16)
+				x = offsetX * (screenWidth - background.getWidth())
+						/ (screenWidth - mapWidth);
+			else
+				x = 0;
+			int y;
+			if (mapHeight - screenHeight >= 16)
+				y = offsetY * (screenHeight - background.getHeight())
+						/ (screenHeight - mapHeight);
+			else
+				y = 0;
+			g.drawBitmap(background, x, y, null);
+		}
+
+		int firstTileX = pixelsToTiles(-offsetX);
+		int lastTileX = firstTileX + pixelsToTiles(screenWidth) + 1;
+		int firstTileY = pixelsToTiles(-offsetY);
+		int lastTileY = firstTileY + pixelsToTiles(screenHeight) + 1;
+
+		if (lastTileX>= mainMap.getWidth())lastTileX= mainMap.getWidth()-1;
+		for (TileMap map : maps) {
+			// draw the visible tiles
+			if (map != null && map.isVisible()) {
+				for (int y = firstTileY; y <= lastTileY; y++) {
+					for (int x = firstTileX; x <= lastTileX; x++) {
+						GameTile tile = map.getTile(x, y);
+						if (tile != null) {
+							tile.draw(g, tilesToPixels(x), tilesToPixels(y),
+									tile.getOffsetX() + offsetX,
+									tile.getOffsetY() + offsetY);
 						}
-	                
-	                }
-	            }
-	    	}
-        }
-        
-        
+					}
+				}
+			}
 
-        Paint paint =new Paint(Color.BLACK);
+			if (map == backgroundMap)
+				if (background != null)g.drawARGB(50, 255, 255, 255); // /alpha 0 ==transparent
+			if (map.isVisible()) {
+
+				for (int i = 0; i < map.creatures().size(); i++) {
+
+					Creature c = map.creatures().get(i);
+					int x = Math.round(c.getX()) + offsetX;
+					int y = Math.round(c.getY()) + offsetY;
+					int tileX = pixelsToTiles(x);
+					int tileY = pixelsToTiles(y);
+
+					if (!c.isAlive()) {
+						map.creatures().remove(i);
+						i--;
+					} else {
+						if (Creature.WAKE_UP_VALUE_UP_LEFT <= tileX
+								&& Creature.WAKE_UP_VALUE_DOWN_RIGHT >= tileX
+								&& Creature.WAKE_UP_VALUE_UP_LEFT <= tileY
+								&& Creature.WAKE_UP_VALUE_DOWN_RIGHT >= tileY) {
+
+							// Only want to deal with platforms that are awake.
+							if (c instanceof Platform) {
+								map.platforms().add((Platform) c);
+							}
+							// Wake up the creature the first time the sprite is
+							// in view.
+							if (c.isSleeping()) {
+								c.wakeUp(c.getX()>player.getX());
+							}
+
+							c.setIsOnScreen(true);
+							if (!c.isInvisible()) {
+								c.draw(g, x, y); // draw the creature
+							}
+							map.relevantCreatures().add(c);
+
+						} else {
+							if (c.isAlwaysRelevant()) {
+								map.relevantCreatures().add(c);
+							}
+							c.setIsOnScreen(false);
+						}
+					}
+
+					
+					
+				}
+				// Draw the player.
+
+				if (map == mainMap && !(((Mario) player).isInvisible())) {
+					((Mario) player).draw(g, Math.round(player.getX())
+							+ offsetX, Math.round(player.getY()) + offsetY,
+							player.getOffsetX(), player.getOffsetY());
+					if (map.particleSystem != null) {
+						map.particleSystem.doDraw(g, offsetX, offsetY);
+					}
+
+				}
+			}
+		}
+
+       // Paint paint =new Paint(Color.BLACK);
         //float dd2dec = new Float(df2.format(player.getdX())).floatValue();
         //g.drawText("dx: " + dd2dec, 300, 17,paint);
        
+        if (drawHudEnabled){
+    	  drawStringDropShadowAsHud(g,"MARIO x "+Settings.getLives(),8,4,0,1);
+    	  drawStringDropShadowAsHud(g,df2.format(Settings.getScore()),8,20,0,1);
+     	 
+    	  g.drawBitmap(MarioResourceManager.Coin_Icon, 108,4, null);
+    	  drawStringDropShadowAsHud(g,"x "+Settings.getCoins(),120,3,0,1);
+    	  //drawStringDropShadow(g,"x "+Settings.getCoins(),9,0);
+    	  drawStringDropShadowAsHud(g,"WORLD",170,4,0,1);
+    	  drawStringDropShadowAsHud(g,Settings.world + "-" + Settings.level,170,20,0,1);
+       	 
+    	  drawStringDropShadowAsHud(g,"TIME-"+Settings.getTime(),screenWidth-4,4,0,-1);
+        }	
+    	    //g.drawBitmap(MarioResourceManager.waterWave, 65*(waveOffset/11), 40, null);
+    		//g.drawBitmap(MarioResourceManager.waterWave, 65*(waveOffset/11)+MarioResourceManager.waterWave.getWidth(),40, null);
+     		Paint p=new Paint();
+    		p.setColor(Color.argb( 110,110, 150,204));
+    		p.setStyle(Style.FILL);
+       		//g.drawRect(0,40+MarioResourceManager.waterWave.getHeight(),screenWidth,screenHeight,p);
+    		waveOffset++;
+    		if (waveOffset*65/11>=MarioResourceManager.waterWave.getWidth())waveOffset=0;
+    		
+    		for(int i=0; i<mainMap.waterZones().size();i++){
+    			Rect VisibleRect=new  Rect(firstTileX,firstTileY,lastTileX,lastTileY);
+    			if (VisibleRect.intersect(mainMap.waterZones().get(i))){
+    				int w=Math.min(MarioResourceManager.waterWave.getWidth()-65*(waveOffset/11),VisibleRect.width()*16);
+    				int h=MarioResourceManager.waterWave.getHeight();
+
+    				g.drawRect(VisibleRect.left*16+offsetX,VisibleRect.top*16+offsetY+h/2,VisibleRect.right*16+offsetX,VisibleRect.bottom*16+offsetY,p);
+    				Rect dst=new Rect(VisibleRect.left*16+offsetX,VisibleRect.top*16+offsetY-h/2,VisibleRect.left*16+offsetX+w,VisibleRect.top*16+offsetY+h/2);
+    				g.drawBitmap(MarioResourceManager.waterWave, new Rect(65*(waveOffset/11),0,65*(waveOffset/11)+w,MarioResourceManager.waterWave.getHeight()),dst,null);
+    				
+    				if(w<VisibleRect.width()*16){
+    					dst=new Rect(VisibleRect.left*16+offsetX+w,VisibleRect.top*16+offsetY-h/2,VisibleRect.left*16+offsetX+VisibleRect.width()*16,VisibleRect.top*16+offsetY+h/2);
+    					g.drawBitmap(MarioResourceManager.waterWave,new Rect(0,0,VisibleRect.width()*16-w,MarioResourceManager.waterWave.getHeight()),dst,null);
+    					//g.drawBitmap(MarioResourceManager.waterWave,0,VisibleRect.top*16-MarioResourceManager.waterWave.getHeight()+offsetY,null);
+    				}
+    	    	}
+    		}
+        
+        if (Settings.mUseOnScreenControls){
+    	  g.drawBitmap(MarioResourceManager.Btn_Prev,5,screenHeight-54,null);
+    	  g.drawBitmap(MarioResourceManager.Btn_Next,60,screenHeight-54,null);
+    	  g.drawBitmap(MarioResourceManager.Btn_Next,60,screenHeight-54,null);
+    	  g.drawBitmap(MarioResourceManager.Btn_Fire,screenWidth-108,screenHeight-54,null);
+       	  g.drawBitmap(MarioResourceManager.Btn_Jump,screenWidth-53,screenHeight-54,null);
+       	 
+       }
+       
+		//g.drawBitmap(MarioResourceManager.waterWave, waveOffset-30, 26, null);
+		//g.drawBitmap(MarioResourceManager.waterWave, waveOffset+MarioResourceManager.waterWave.getWidth()-30, 26, null);
+
+	
+    	  /*
         if(lastLife != player.getHealth()); {
 	        lastLife = player.getHealth();
-        	
+	        
+      	 // drawStringDropShadow(g,"MARIO-"+lastLife,1,1);
+      	//  drawStringDropShadow(g,"COINS-012",12,1);
+      	 // drawStringDropShadow(g,"SCORE-02342",30,1);
+	
+	       
+	       
         	int myColor = Color.argb(50, 50, 50, 50);
 	        paint.setColor(myColor);
 	        paint.setStyle(Style.FILL_AND_STROKE);
@@ -281,7 +372,7 @@ public class GameRenderer {
 	        paint.setTextAlign(Paint.Align.RIGHT);
 	        g.drawText(Settings.getScore()+" - ", screenWidth-MarioResourceManager.Coin_1.getWidth()-4, 6+14,paint);
 	        
-	        /*
+	       
 	        g.drawRect(2, 2, screenWidth - 10, 18,paint);
 	        //g.fill3DRect(2, 2, screenWidth - 10, 18, true);
 	        paint.setColor(Color.BLACK);
@@ -303,9 +394,10 @@ public class GameRenderer {
 	        for(int i=0; i < player.getHealth(); i++) {
 	        	g.drawRect(hbStart + i*hbWidth, 4, hbWidth, 13, paint);
 	        } 
-	        */
+	        
 	    }
-       // drawHud( g);
+	    */
+        //drawHud( g);
         maps.clear(); 
     }
     
@@ -335,8 +427,75 @@ public class GameRenderer {
 			dstRect.left=x;
 			dstRect.right=x+11;
 			
-			g.drawBitmap(MarioResourceManager.digits[pos],srcRect,dstRect,null);
+			//g.drawBitmap(MarioResourceManager.digits[pos],srcRect,dstRect,null);
 			x += 11;
 		}
 	}
+	
+	public static void drawStringDropShadowAsEntity(Canvas g, String text,
+			int x, int y,int type, int alignmrnt) {
+		drawString(g, text, x, y, xOffset, type,alignmrnt);
+	}
+
+	public static void drawStringDropShadowAsHud(Canvas g, String text, int x,
+			int y,int type,int alignment) {
+		drawString(g, text, x, y, 0,type,alignment);
+	}
+
+	public static void drawStringDropShadow(Canvas g, String text, int x,
+			int y,int type, int alignment) {
+		drawString(g, text, x, y, 0,type,alignment);
+	}
+	
+	/**
+	 * 
+	 * @param g
+	 * @param text
+	 * @param x
+	 * @param y
+	 * @param offset
+	 * @param type
+	 * @param alignment  -1==left, 0 ==centre, 1=right
+	 */
+	private static void drawString(Canvas g, String text, int x, int y,int offset, int type,int alignment) {
+		if (alignment==0){
+			if (type==1)
+				x-=text.length()/2*12;
+			else if (type==2)			
+				x-=text.length()/2*16;
+			else
+				x-=text.length()/2*8;
+		}else if(alignment==-1){
+			if (type==1)
+				x-=text.length()*12;
+			else if (type==2)			
+				x-=text.length()*16;
+			else
+				x-=text.length()*8;
+		}
+		
+		x = x + offset;
+		char[] ch = text.toCharArray();
+		for (int i = 0; i < ch.length; i++) {
+			if (type==1)
+				g.drawBitmap(MarioResourceManager.fontMedium[ch[i] - 32], x + i
+						* 8, y, null);
+			else if(type==2)
+				g.drawBitmap(MarioResourceManager.fontLarge[ch[i] - 32], x + i
+						* 16, y, null);
+			else
+				g.drawBitmap(MarioResourceManager.fontSmall[ch[i] - 32], x + i
+						* 8, y, null);
+			
+		}
+	}
+
+	public boolean isDrawHudEnabled() {
+		return drawHudEnabled;
+	}
+
+	public void setDrawHudEnabled(boolean drawHudEnabled) {
+		this.drawHudEnabled = drawHudEnabled;
+	}
+
 }

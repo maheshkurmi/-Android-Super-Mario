@@ -46,10 +46,10 @@ public class Goomba extends Creature {
 		setAnimation(waddle);
 	}
 	
-	public void wakeUp() {
-		Random r = new Random();
+	public void wakeUp(boolean isLeft) {
 		super.wakeUp();
-		dx = (r.nextInt(3) == 0) ? -.03f : .03f;
+		dx=isLeft?-0.03f:0.03f;
+		//dx = (r.nextInt(25) == 0) ? .03f : -.03f;
 	}
 	
 	public void jumpedOn() {

@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import com.shikhar.androidgames.framework.Graphics;
 import com.shikhar.androidgames.framework.Image;
+import com.shikhar.androidgames.mario.core.MarioResourceManager;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -98,6 +99,22 @@ public class AndroidGraphics implements Graphics {
 	public void drawString(String text, int x, int y, Paint paint){
 	     canvas.drawText(text, x, y, paint);
     }
+	
+
+	/**
+	 * Draws Bitmap Font
+	 * @param font bitmap representing fonts
+	 * @param text
+	 * @param x
+	 * @param y
+	 */
+	public  void drawBitmapFont(Bitmap[] font, String text, int x, int y,int charSize) {
+		char[] ch = text.toCharArray();
+		for (int i = 0; i < ch.length; i++) {
+			canvas.drawBitmap(font[ch[i] - 32], x + i	* charSize, y, null);
+		}
+	}
+
 	
 	public void drawLine(int x, int y, int x2, int y2, int color) {
 		paint.setColor(color);
