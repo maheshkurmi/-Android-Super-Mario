@@ -6,7 +6,7 @@ This game was started as a project to learn android programming, but soon it cam
 
 Have a look at the starting screen...
 
-!(Have a look at the starting screen...)[http://lh5.ggpht.com/7mpw1b5pQSrZD8ylEwz2lJ-z9a-hQ6dXsXkIYYzMsfLh7a4KtHlFq4VOhbUczBaG_JI]
+![Have a look at the starting screen...](http://lh5.ggpht.com/7mpw1b5pQSrZD8ylEwz2lJ-z9a-hQ6dXsXkIYYzMsfLh7a4KtHlFq4VOhbUczBaG_JI)
 
 
 Features
@@ -31,7 +31,7 @@ Download
 
 Download the .apk file from the link given below...
 
-(Download .apk file)[https://github.com/maheshkurmi/-Android-Super-Mario/blob/master/SuperMario.apk?raw=true]
+[Download .apk file](https://github.com/maheshkurmi/-Android-Super-Mario/blob/master/SuperMario.apk?raw=true)
 
 
 For installation, you must have enabled the option of install apps from unknown sources. For this, go to the sttings, then go to security and enable the corresponding option.
